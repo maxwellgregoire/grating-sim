@@ -60,4 +60,6 @@ target/
 *.aux
 *.log
 *.synctex.gz
-*.bib
+*Notes.bib
+*.bbl
+*.blg
