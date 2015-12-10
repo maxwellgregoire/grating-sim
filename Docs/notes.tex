@@ -32,6 +32,7 @@
 \newcommand{\braket}[2]{\left\langle #1 \right|\left. #2 \right\rangle}
 \newcommand{\trace}[1]{\mathrm{Tr}\left(#1\right)}
 \newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
 \newcommand{\figref}[1]{Fig.~\ref{#1}}
 \newcommand{\eqnref}[1]{Eqn.~\eqref{#1}}
 
@@ -52,7 +53,7 @@
 
 The goal of this project is to allow us to explore how the sensitivity of a Mach-Zehnder atom interferometer gyroscope is determined by:
 \begin{itemize}
-	\item choice of atom (with mass $m$ and van der Waals coefficient $C_3$)
+	\item choice of atom (and its associated van der Waals $C_3$ coefficient)
 	\item atom velocity $v$
 	\item grating period $d_g$
 	\item grating open fraction (defined as $w/d_g$, where $w$ is the width of the gaps between adjacent grating bars)
@@ -62,32 +63,52 @@ The goal of this project is to allow us to explore how the sensitivity of a Mach
 Choosing the grating thickness $l$ and grating-to-grating distance $L$ is likely fairly simple: we always want smaller $l$ and larger $L$, but $l$ will probably be determined by the grating fabrication process and $L$ is limited by the maximum size of the apparatus. The grating period $d_g$ and open fraction $w/d_g$ can be optimized for a choice of atom and atom velocity $v$. Therefore, we want to be able to plot the sensitivity of a Mach-Zehnder atom interferometer gyroscope as a function of $v$ for different atoms.
 
 
-Short-term gyroscope sensitivity $S$ is described as 
+The short-term sensitivity $S$ of a gyroscope is described as 
 \begin{align}
-	S = \delta\Omega \sqrt{T}
+	S = \delta\Omega \sqrt{t}
 	\label{sensitivityGeneral}
 \end{align}
-where $\delta\Omega$ is the uncertainty in a typical measurement of rotation rate $\Omega$ and $T$ is the amount of data acquisition time required to make that measurement.
+where $\delta\Omega$ is the uncertainty in a typical measurement of rotation rate $\Omega$ and $t$ is the amount of data acquisition time required to make that measurement.
 This sensitivity $S$ can be written in terms of the items listed previously.
 For an atom interferometer gyroscope, the phase $\phi$ can be written as
 \begin{align}
 	\phi = \frac{4\pi\vec{\Omega}\cdot\vec{A}}{\lambda_{dB} v} - \phi_0
 \end{align}
-where $\phi_0$ is an arbitrary refrence phase, $\lambda_{dB}$ is the atoms' de Broglie wavelength, and $\vec{\Omega}\cdot\vec{A}$ is the projection of the gyroscope's rotation rate $\vec{\Omega}$ onto the plane of the interferometer with enclosed area $A$. If we let $\Omega$ be the component of $\vec{\Omega}$ normal to $\vec{A}$ and represent $\lambda_{dB}$ as $h/mv$, we can rewrite the above equation as
+where $\phi_0$ is an arbitrary refrence phase, $\lambda_{dB}$ is the atoms' de Broglie wavelength, and $\vec{\Omega}\cdot\vec{A}$ is the projection of the gyroscope's rotation rate vector $\vec{\Omega}$ onto the plane of the interferometer with enclosed area $A$. If we let $\Omega$ be the component of $\vec{\Omega}$ normal to $\vec{A}$ and represent $\lambda_{dB}$ as $h/mv$, we can rewrite the above equation as
 \begin{align}
 	\delta\phi = \frac{4\pi m A}{h}\delta\Omega
 \end{align}
 and solve it for $\delta\Omega$ to get
 \begin{align}
 	\delta\Omega = \frac{h}{4\pi m A}\delta\phi
+	\label{deltaOmega}
 \end{align}
 
-According to \cite{Hromada2014}
+According to \cite{Lenef1997}, the uncertainty $\delta\phi$ on a single measurement of the phase of an atom interferometer can be represented as
+\begin{align}
+	\delta\phi = \frac{1}{C\sqrt{N}}
+	\label{phaseSDev}
+\end{align}
+where $N$ is the number of atoms detected.
+Substituting Eq. \ref{phaseSDev} into Eq. \ref{deltaOmega} and the result into Eq. \ref{sensitivityGeneral}, we get 
+\begin{align}
+	S = \frac{h}{4\pi m A} \sqrt{\frac{t}{C^2N}}
+	\label{sensitivity2}
+\end{align}
+If we take $t$ to be the unit time, we see $N/t$ is the average atom beam intensity (i.e. flux) $\avg{I}$.
+
+The interferometer's enclosed area $A$ can be written as
+\begin{align}
+	A = L^2\tan{\theta_d} = L^2\tan\left(\arcsin\left(\frac{h}{mvd_g}\right)\right) \approx \frac{L^2h}{mvd_g}
+\end{align}
+Substituting into Eq. \ref{sensitivity2}, we get
+\begin{align}
+	S = \frac{vd_g}{4\pi L^2} \frac{1}{ \sqrt{C^2\avg{I}}}
+	\label{sensitivity3}
+\end{align}
 
 
-
-
-
+\cite{Cronin2005} describes in detail how to calculate $C^2\avg{I}$ from the nanograting open fraction, thickness, and period. This calculation can be done with and without considering van der Waals interactions between the atoms and the grating bars. The case without van der Waals interaction represents a Mach-Zehnder atom interferometer made with Kapitza-Dirac gratings.
 
 \bibliography{library}
 
