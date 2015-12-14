@@ -61,5 +61,4 @@ target/
 *.log
 *.synctex.gz
 *Notes.bib
-*.bbl
 *.blg

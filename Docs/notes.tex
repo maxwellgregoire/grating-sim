@@ -62,7 +62,6 @@ The goal of this project is to allow us to explore how the sensitivity of a Mach
 \end{itemize}
 Choosing the grating thickness $l$ and grating-to-grating distance $L$ is likely fairly simple: we always want smaller $l$ and larger $L$, but $l$ will probably be determined by the grating fabrication process and $L$ is limited by the maximum size of the apparatus. The grating period $d_g$ and open fraction $w/d_g$ can be optimized for a choice of atom and atom velocity $v$. Therefore, we want to be able to plot the sensitivity of a Mach-Zehnder atom interferometer gyroscope as a function of $v$ for different atoms.
 
-
 The short-term sensitivity $S$ of a gyroscope is described as 
 \begin{align}
 	S = \delta\Omega \sqrt{t}
@@ -84,15 +83,15 @@ and solve it for $\delta\Omega$ to get
 	\label{deltaOmega}
 \end{align}
 
-According to \cite{Lenef1997}, the uncertainty $\delta\phi$ on a single measurement of the phase of an atom interferometer can be represented as
+According to \cite{Lenef1997}, the uncertainty $\delta\phi$ on a single measurement of the phase of an atom interferometer is defined by
 \begin{align}
-	\delta\phi = \frac{1}{C\sqrt{N}}
+	\delta\phi^2 = \frac{1}{|C|^2N}
 	\label{phaseSDev}
 \end{align}
 where $N$ is the number of atoms detected.
 Substituting Eq. \ref{phaseSDev} into Eq. \ref{deltaOmega} and the result into Eq. \ref{sensitivityGeneral}, we get 
 \begin{align}
-	S = \frac{h}{4\pi m A} \sqrt{\frac{t}{C^2N}}
+	S = \frac{h}{4\pi m A} \sqrt{\frac{t}{|C|^2N}}
 	\label{sensitivity2}
 \end{align}
 If we take $t$ to be the unit time, we see $N/t$ is the average atom beam intensity (i.e. flux) $\avg{I}$.
@@ -103,12 +102,14 @@ The interferometer's enclosed area $A$ can be written as
 \end{align}
 Substituting into Eq. \ref{sensitivity2}, we get
 \begin{align}
-	S = \frac{vd_g}{4\pi L^2} \frac{1}{ \sqrt{C^2\avg{I}}}
+	S = \frac{vd_g}{4\pi L^2} \frac{1}{ \sqrt{|C|^2\avg{I}}}
 	\label{sensitivity3}
 \end{align}
 
 
-\cite{Cronin2005} describes in detail how to calculate $C^2\avg{I}$ from the nanograting open fraction, thickness, and period. This calculation can be done with and without considering van der Waals interactions between the atoms and the grating bars. The case without van der Waals interaction represents a Mach-Zehnder atom interferometer made with Kapitza-Dirac gratings.
+\cite{Cronin2005} describes in detail how to calculate $|C|^2\avg{I}$ from the nanograting open fraction, thickness, and period. (Note that \cite{Cronin2005} refers to $|C|^2$ simply as $C^2$, although $C$ may be complex.) This calculation can be done with and without considering van der Waals interactions between the atoms and the grating bars. The case without van der Waals interaction represents a Mach-Zehnder atom interferometer made with Kapitza-Dirac gratings.
+
+We may also want to plot other properties vs $v$ and atom species, such as the diffraction efficiencies themselves. We can add this functionality into the code as needed.
 
 \bibliography{library}
 
