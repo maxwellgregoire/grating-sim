@@ -1,9 +1,11 @@
+import cmath
 import numpy as np
 from scipy import integrate
+from scipy.optimize import minimize
 
 # In this code, the quantity |C|^2 * <I> is referred to as "signal"
 
-# Constants:
+# Constants
 hbar = 1.054e-34
 
 # Calculate sensitivity assuming vdW interactions given:
@@ -12,17 +14,93 @@ hbar = 1.054e-34
 #   longitudinal spacing between gratings (L)
 #   atom velocity (v)
 #   vdW C_3 coefficient between the atoms and the silicon-nitride gratings (C3)
-# This function numerically optimizes:
-#   grating open fractions
-#   grating period
-# TODO: we may also want to write a version of this function that doesn't optimize period and open fractions
-def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3):
+# This function (optionally) numerically optimizes:
+#   grating open fractions (unless fixed_f is specified, in which case all gratings have that open fraction)
+#   grating period (unless fixed_d is specified)
+def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
+    """ Calculate sensitivity assuming vdW interactions """
 
-    # Optimize the first two bracketted terms in Cronin2005 paper eqn 14
-    #   (The third bracketted term depends only on 3rd grating open fraction, and is optimized for f_g3 = 0.37) 
+    # Optimize the sensitivity, given by eqn 8 in then notes. 
+    #   The |C|^2<I> term in eqn 8 is given by eqn 14 in the Cronin2005 paper.
+    #   The third bracketted term in the Cronin2005 paper eqn 14 depends only on 3rd grating open fraction, 
+    #       which itself is not present anywhere else in notes eqn 8,
+    #       and is optimized when the 3rd grating open fraction = 0.371.
+    #       Therefore, the optimized value of the third bracketted term in the Cronin2005 paper is 0.230.
+
+    if fixed_d is None and fixed_f is None:
+
+        # Arguments (i.e. elements of the input array x) are:
+        #   [0]: grating period
+        #   [1]: grating 1 open fraction
+        #   [2]: grating 2 open fraction 
+        def sensitivity_to_optimize(x):
+
+            # calculate modulus-squared diffraction efficiencies
+            e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, x[1], x[0], l, v, C3)[0])[0]
+            e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[1], x[0], l, v, C3)[0])[0]
+            e1_g2_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[2], x[0], l, v, C3)[0])[0]
+
+            # calculate signal
+            signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+
+            return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
+
+        guesses = np.array([100.0e-9, 0.5, 0.5])
+        return minimize(sensitivity_to_optimize, guesses, method='SLSQP', bounds=((10.0e-9, None), (0.0, 1.0), (0.0, 1.0)))
+
+    elif fixed_f is None: # and fixed_d is specified
+
+        # Arguments (i.e. elements of the input array x) are:
+        #   [0]: grating 1 open fraction
+        #   [1]: grating 2 open fraction 
+        def sensitivity_to_optimize(x):
+
+            # calculate modulus-squared diffraction efficiencies
+            e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, x[0], fixed_d, l, v, C3)[0])[0]
+            e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[0], fixed_d, l, v, C3)[0])[0]
+            e1_g2_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[1], fixed_d, l, v, C3)[0])[0]
+
+            # calculate signal
+            signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+
+            return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
+
+        guesses = np.array([0.5, 0.5])
+        return minimize(sensitivity_to_optimize, guesses, method='SLSQP', bounds=((0.0, 1.0), (0.0, 1.0)))
+    
+    elif fixed_d is None: # and fixed_f is specified
+
+        # Arguments (i.e. elements of the input array x) are:
+        #   [0]: grating period
+        def sensitivity_to_optimize(x):
+
+            # calculate modulus-squared diffraction efficiencies
+            e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, x[0], l, v, C3)[0])[0]
+            e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, x[0], l, v, C3)[0])[0]
+            e1_g2_sq = e1_g1_sq
+
+            # calculate signal
+            signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+
+            return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
+
+        guesses = np.array([100.0e-9])
+        return minimize(sensitivity_to_optimize, guesses, method='SLSQP', bounds=np.array([(10.0e-9, None)]))
+
+    else: # both fixed_f and fixed_d are specified
+
+        # calculate modulus-squared diffraction efficiencies
+        e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, fixed_d, l, v, C3)[0])[0]
+        e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, fixed_d, l, v, C3)[0])[0]
+        e1_g2_sq = e1_g1_sq
+
+        # calculate signal
+        signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+
+        return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
 
 
-    pass
+
 
 
 
@@ -33,8 +111,9 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3):
 #   thickness (l)
 #   atom velocity (v)
 #   vdW C3 coefficient (C3)
-# Returns value [0] and error [1]
+# Returns complex value [0] and error [1]
 def calc_diffraction_eff_vdw(n, f, d, l, v, C3):
+    """ Calculate a particular diffraction efficiency of a grating assuming vdW interactions """
 
     p1 = 2.0*np.pi*n
     p2 = f/2.0
@@ -60,6 +139,7 @@ def calc_diffraction_eff_vdw(n, f, d, l, v, C3):
 # NOTE: For kapitza-dirac gratings, sensitivity depends linearly on grating period, 
 #   so we cannot optimize w/r/t grating period as we would assuming vdW interactions
 def calc_sensitivity_kd(I_inc, L, d, v, assume_f_half = True):
+    """ Calculate sensitivity assuming no vdW interaction """
 
     # calc signal
     if assume_f_half:

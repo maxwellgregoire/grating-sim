@@ -4,6 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from calc_sensitivity import calc_diffraction_eff_vdw
 
+
+
+
+
+
+
+
+
+
+
 #calc_diffraction_eff_vdw(1, 0.5, 100.0e-9, 125.0e-9, 2000, 8.01e-49)
 
 f = np.arange(0.4, 0.9, 0.04)
