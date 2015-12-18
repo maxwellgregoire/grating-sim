@@ -45,7 +45,7 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
 
             return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
 
-        guesses = np.array([100.0e-9, 0.6, 0.6])
+        guesses = np.array([100.0e-9, 0.5, 0.5])
         return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=((10.0e-9, None), (0.01, 1.0), (0.01, 1.0)))
 
     elif fixed_f is None: # and fixed_d is specified
@@ -65,7 +65,7 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
 
             return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
 
-        guesses = np.array([0.6, 0.6])
+        guesses = np.array([0.5, 0.5])
         return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=((0.01, 1.0), (0.01, 1.0)))
     
     elif fixed_d is None: # and fixed_f is specified
@@ -138,7 +138,7 @@ def calc_diffraction_eff_vdw(n, f, d, l, v, C3):
 #   monochromatic standing waves of light) rather than using optimal open fractions
 # NOTE: For kapitza-dirac gratings, sensitivity depends linearly on grating period, 
 #   so we cannot optimize w/r/t grating period as we would assuming vdW interactions
-def calc_sensitivity_kd(I_inc, L, d, v, assume_f_half = True):
+def calc_sensitivity_kd(I_inc, L, v, d, assume_f_half = True):
     """ Calculate sensitivity assuming no vdW interaction """
 
     # calc signal
