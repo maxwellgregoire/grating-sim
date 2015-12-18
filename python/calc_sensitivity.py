@@ -45,8 +45,8 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
 
             return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
 
-        guesses = np.array([100.0e-9, 0.5, 0.5])
-        return minimize(sensitivity_to_optimize, guesses, method='TNC', bounds=((10.0e-9, None), (0.0, 1.0), (0.0, 1.0)))
+        guesses = np.array([100.0e-9, 0.6, 0.6])
+        return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=((10.0e-9, None), (0.01, 1.0), (0.01, 1.0)))
 
     elif fixed_f is None: # and fixed_d is specified
 
@@ -65,8 +65,8 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
 
             return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
 
-        guesses = np.array([0.5, 0.5])
-        return minimize(sensitivity_to_optimize, guesses, method='TNC', bounds=((0.0, 1.0), (0.0, 1.0)))
+        guesses = np.array([0.6, 0.6])
+        return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=((0.01, 1.0), (0.01, 1.0)))
     
     elif fixed_d is None: # and fixed_f is specified
 
@@ -85,7 +85,7 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
             return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
 
         guesses = np.array([100.0e-9])
-        return minimize(sensitivity_to_optimize, guesses, method='TNC', bounds=np.array([(10.0e-9, None)]))
+        return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=np.array([(10.0e-9, None)]))
 
     else: # both fixed_f and fixed_d are specified
 
