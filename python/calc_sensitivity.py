@@ -36,12 +36,12 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
         def sensitivity_to_optimize(x):
 
             # calculate modulus-squared diffraction efficiencies
-            e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, x[1], x[0], l, v, C3)[0])[0]
-            e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[1], x[0], l, v, C3)[0])[0]
-            e1_g2_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[2], x[0], l, v, C3)[0])[0]
+            e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, x[1], x[0], l, v, C3)[0])[0]
+            e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, x[1], x[0], l, v, C3)[0])[0]
+            e1_g2 = cmath.polar(calc_diffraction_eff_vdw(1, x[2], x[0], l, v, C3)[0])[0]
 
             # calculate signal
-            signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+            signal = 4.0*npv.I_inc_nom*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
 
             return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
 
@@ -56,12 +56,12 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
         def sensitivity_to_optimize(x):
 
             # calculate modulus-squared diffraction efficiencies
-            e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, x[0], fixed_d, l, v, C3)[0])[0]
-            e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[0], fixed_d, l, v, C3)[0])[0]
-            e1_g2_sq = cmath.polar(calc_diffraction_eff_vdw(1, x[1], fixed_d, l, v, C3)[0])[0]
+            e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, x[0], fixed_d, l, v, C3)[0])[0]
+            e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, x[0], fixed_d, l, v, C3)[0])[0]
+            e1_g2 = cmath.polar(calc_diffraction_eff_vdw(1, x[1], fixed_d, l, v, C3)[0])[0]
 
             # calculate signal
-            signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+            signal = 4.0*npv.I_inc_nom*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
 
             return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
 
@@ -75,12 +75,12 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
         def sensitivity_to_optimize(x):
 
             # calculate modulus-squared diffraction efficiencies
-            e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, x[0], l, v, C3)[0])[0]
-            e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, x[0], l, v, C3)[0])[0]
-            e1_g2_sq = e1_g1_sq
+            e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, x[0], l, v, C3)[0])[0]
+            e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, x[0], l, v, C3)[0])[0]
+            e1_g2 = e1_g1
 
             # calculate signal
-            signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+            signal = 4.0*npv.I_inc_nom*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
 
             return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
 
@@ -90,12 +90,12 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
     else: # both fixed_f and fixed_d are specified
 
         # calculate modulus-squared diffraction efficiencies
-        e0_g1_sq = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, fixed_d, l, v, C3)[0])[0]
-        e1_g1_sq = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, fixed_d, l, v, C3)[0])[0]
-        e1_g2_sq = e1_g1_sq
+        e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, fixed_d, l, v, C3)[0])[0]
+        e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, fixed_d, l, v, C3)[0])[0]
+        e1_g2 = e1_g1
 
         # calculate signal
-        signal = 4*I_inc*0.23*e0_g1_sq*e1_g1_sq*e1_g2_sq / (e0_g1_sq + e1_g1_sq)
+        signal = 4.0*npv.I_inc_nom*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
 
         return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
 
