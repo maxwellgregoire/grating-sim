@@ -10,15 +10,15 @@ import nominal_param_values as npv
 
 # plot sensitivity vs g1 and g2 open fractions for a given velocity and grating period
 
-f1 = np.linspace(0.2,0.8,11)
-f2 = np.linspace(0.2,0.8,11)
+f1 = np.linspace(0.3,0.95,11)
+f2 = np.linspace(0.3,0.95,11)
 F1, F2 = np.meshgrid(f1,f2)
 S = np.zeros([f2.size,f2.size], dtype = np.float)
 
 for i in range(f1.size):
     for j in range(f2.size):
         
-        # calculate modulus-squared diffraction efficiencies
+        # calculate diffraction efficiencies
         e0_g1 = cmath.polar(cs.calc_diffraction_eff_vdw(0, f1[i], npv.d_nom, npv.l_nom, npv.v_nom, npv.C3_nom)[0])[0]
         e1_g1 = cmath.polar(cs.calc_diffraction_eff_vdw(1, f1[i], npv.d_nom, npv.l_nom, npv.v_nom, npv.C3_nom)[0])[0]
         e1_g2 = cmath.polar(cs.calc_diffraction_eff_vdw(1, f2[j], npv.d_nom, npv.l_nom, npv.v_nom, npv.C3_nom)[0])[0]
