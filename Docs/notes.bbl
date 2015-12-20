@@ -6,7 +6,7 @@
 %Control: page (1) range
 %Control: year (0) verbatim
 %Control: production of eprint (0) enabled
-\begin{thebibliography}{2}%
+\begin{thebibliography}{3}%
 \makeatletter
 \providecommand \@ifxundefined [1]{%
  \@ifx{#1\undefined}
@@ -75,4 +75,14 @@
   {http://arxiv.org/abs/physics/0508032} {\  (\bibinfo {year} {2005})},\
   \Eprint {http://arxiv.org/abs/0508032} {arXiv:0508032 [physics]} \BibitemShut
   {NoStop}%
+\bibitem [{\citenamefont {Arora}\ and\ \citenamefont
+  {Sahoo}(2014)}]{Arora2014}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont
+  {Arora}}\ and\ \bibinfo {author} {\bibfnamefont {B.~K.}\ \bibnamefont
+  {Sahoo}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {{van der Waals
+  coefficients for alkali-metal atoms in material media}},}\ }\href
+  {http://link.aps.org/doi/10.1103/PhysRevA.89.022511} {\bibfield  {journal}
+  {\bibinfo  {journal} {Phys. Rev. A}\ }\textbf {\bibinfo {volume} {89}},\
+  \bibinfo {pages} {022511} (\bibinfo {year} {2014})}\BibitemShut {NoStop}%
 \end{thebibliography}%

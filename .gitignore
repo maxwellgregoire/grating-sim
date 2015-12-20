@@ -62,3 +62,7 @@ target/
 *.synctex.gz
 *Notes.bib
 *.blg
+
+# Other
+*.pyc
+*.swp

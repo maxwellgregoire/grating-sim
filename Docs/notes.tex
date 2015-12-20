@@ -107,9 +107,29 @@ Substituting into Eq. \ref{sensitivity2}, we get
 \end{align}
 
 
-\cite{Cronin2005} describes in detail how to calculate $|C|^2\avg{I}$ from the nanograting open fraction, thickness, and period. (Note that \cite{Cronin2005} refers to $|C|^2$ simply as $C^2$, although $C$ may be complex.) This calculation can be done with and without considering van der Waals interactions between the atoms and the grating bars. The case without van der Waals interaction represents a Mach-Zehnder atom interferometer made with Kapitza-Dirac gratings.
+\cite{Cronin2005} describes in detail how to calculate $|C|^2\avg{I}$ from the nanograting open fraction, thickness, and period. This calculation can be done with and without considering van der Waals interactions between the atoms and the grating bars. The case without van der Waals interaction represents a Mach-Zehnder atom interferometer made with Kapitza-Dirac gratings.
 
-We may also want to plot other properties vs $v$ and atom species, such as the diffraction efficiencies themselves. We can add this functionality into the code as needed.
+Note that the $\left(e_n^{Gi}\right)^2$ terms in Eq. 14 in \cite{Cronin2005} should actually be written as $\left|e_n^{Gi}\right|^2$.
+
+van der Waals $C_3$ coefficients for alkali metals interacting with various media (including silicon nitride) are listed in atomic units in \cite{Arora2014}. To convert the $C_3$ coefficients in atomic units to SI units, multiply by 1 Hartree times the Bohr radius cubed. Useful $C_3$ coefficients are listed in Table \ref{tableC3}.
+
+\begingroup
+\begin{table}
+\caption{\label{tableC3} van der Waals $C_3$ coefficients in units of $10^{-49}$ Jm$^3$ for various combinations of atoms and dielectric media \cite{Arora2014}.}
+\begin{center}
+\begin{tabular}{l|ll}
+\hline\hline
+& SiN$_x$ & SiO$_2$ \\
+\hline
+Li & 4.61 & 3.10 \\
+Na & 5.10 & 3.49 \\
+K &  7.82 & 5.42 \\
+Rb & 8.85 & 6.20 \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+\endgroup
 
 \bibliography{library}
 
