@@ -10,6 +10,10 @@ from scipy.optimize import curve_fit
 # Constants
 hbar = 1.054e-34
 
+# Maximum open fraction that is practically achievable 
+f_max = 0.8
+
+
 # Calculate sensitivity assuming vdW interactions given:
 #   beam intensity incident on the first grating (I_inc)
 #   grating thickness (l)
@@ -106,6 +110,53 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
 
 
 
+# Calculate sensitivity assuming vdW interactions given:
+#   beam intensity incident on the first grating (I_inc)
+#   grating thickness (l)
+#   longitudinal spacing between gratings (L)
+#   atom velocity (v)
+#   vdW C_3 coefficient (C3)
+# This function (optionally) numerically optimizes:
+#   grating open fractions (unless fixed_f is specified, in which case all gratings have that open fraction)
+#   grating period (unless fixed_d is specified)
+def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
+    """ Calculate sensitivity assuming vdW interactions """
+
+    # Optimize the sensitivity, given by eqn 8 in then notes. 
+    #   The |C|^2<I> term in eqn 8 is given by eqn 14 in the Cronin2005 paper.
+    #   The third bracketted term in the Cronin2005 paper eqn 14 depends only on 3rd grating open fraction, 
+    #       which itself is not present anywhere else in notes eqn 8,
+    #       and is optimized when the 3rd grating open fraction = 0.371.
+    #       Therefore, the optimized value of the third bracketted term in the Cronin2005 paper is 0.230.
+
+    if fixed_d is None and fixed_f is None:
+
+        pass
+
+    elif fixed_f is None: # and fixed_d is specified
+
+        pass
+
+    elif fixed_d is None: # and fixed_f is specified
+
+        pass
+
+    else: # both fixed_f and fixed_d are specified
+
+        # calculate diffraction efficiencies
+        e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, fixed_d, l, v, C3)[0])[0]
+        e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, fixed_d, l, v, C3)[0])[0]
+        e1_g2 = e1_g1
+
+        # calculate signal
+        signal = 4.0*I_inc*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
+
+        return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
+
+
+
+
+
 
 # Calculate the signal given
 #   beam intensity incident on the first grating (I_inc)
@@ -169,12 +220,20 @@ def calc_signal_vdw(I_inc, d, l, v, C3, use_gauss_fit = True):
         popt1, pcov1 = curve_fit(gauss, f, sig1)
         popt2, pcov2 = curve_fit(gauss, f, sig2)
 
-        return np.array([4.0*I_inc*0.23 * popt1[0] * popt2[0], popt1[1], popt2[1]])
+        # impose maximum open fraction
+        f1_res = min(popt1[1], f_max)
+        f2_res = min(popt2[1], f_max)
+
+        # calculate final result
+        b1_res = -b1_to_optimize(f1_res)
+        b2_res = -b2_to_optimize(f2_res)
+        
+        return np.array([4.0*I_inc*0.23 * b1_res * b2_res, popt1[1], popt2[1]])
 
     else:
 
-        res_b1 = minimize(b1_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,0.9)]), options={'eps':0.01})
-        res_b2 = minimize(b2_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,0.9)]), options={'eps':0.01})
+        res_b1 = minimize(b1_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,f_max)]), options={'eps':0.01})
+        res_b2 = minimize(b2_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,f_max)]), options={'eps':0.01})
     
         # returns
         #   [0]: signal

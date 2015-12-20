@@ -67,6 +67,7 @@ sig_res = cs.calc_signal_vdw(npv.I_inc_nom, d, 150.0e-9, v, 4.8e-49)
 print "optimimal open fractions:"
 print "f1: ", sig_res[1]
 print "f2: ", sig_res[2]
+print "gives signal: ", sig_res[0]
 
 
 plt.figure()
