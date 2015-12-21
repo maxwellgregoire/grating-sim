@@ -15,101 +15,6 @@ hbar = 1.054e-34
 f_max = 0.8
 
 
-# Calculate sensitivity assuming vdW interactions given:
-#   beam intensity incident on the first grating (I_inc)
-#   grating thickness (l)
-#   longitudinal spacing between gratings (L)
-#   atom velocity (v)
-#   vdW C_3 coefficient (C3)
-# This function (optionally) numerically optimizes:
-#   grating open fractions (unless fixed_f is specified, in which case all gratings have that open fraction)
-#   grating period (unless fixed_d is specified)
-def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
-    """ Calculate sensitivity assuming vdW interactions """
-
-    # Optimize the sensitivity, given by eqn 8 in then notes. 
-    #   The |C|^2<I> term in eqn 8 is given by eqn 14 in the Cronin2005 paper.
-    #   The third bracketted term in the Cronin2005 paper eqn 14 depends only on 3rd grating open fraction, 
-    #       which itself is not present anywhere else in notes eqn 8,
-    #       and is optimized when the 3rd grating open fraction = 0.371.
-    #       Therefore, the optimized value of the third bracketted term in the Cronin2005 paper is 0.230.
-
-    if fixed_d is None and fixed_f is None:
-
-        # Arguments (i.e. elements of the input array x) are:
-        #   [0]: grating period
-        #   [1]: grating 1 open fraction
-        #   [2]: grating 2 open fraction 
-        def sensitivity_to_optimize(x):
-
-            # calculate diffraction efficiencies
-            e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, x[1], x[0], l, v, C3)[0])[0]
-            e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, x[1], x[0], l, v, C3)[0])[0]
-            e1_g2 = cmath.polar(calc_diffraction_eff_vdw(1, x[2], x[0], l, v, C3)[0])[0]
-
-            # calculate signal
-            signal = 4.0*I_inc*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
-
-            return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
-
-        guesses = np.array([100.0e-9, 0.5, 0.5])
-        return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=((10.0e-9, None), (0.01, 1.0), (0.01, 1.0)))
-
-    elif fixed_f is None: # and fixed_d is specified
-
-        # Arguments (i.e. elements of the input array x) are:
-        #   [0]: grating 1 open fraction
-        #   [1]: grating 2 open fraction 
-        def sensitivity_to_optimize(x):
-
-            print x
-
-            # calculate diffraction efficiencies
-            e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, x[0], fixed_d, l, v, C3)[0])[0]
-            e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, x[0], fixed_d, l, v, C3)[0])[0]
-            e1_g2 = cmath.polar(calc_diffraction_eff_vdw(1, x[1], fixed_d, l, v, C3)[0])[0]
-
-            # calculate signal
-            signal = 4.0*I_inc*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
-
-            return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
-
-        guesses = np.array([0.5, 0.5])
-        return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=((0.01, 1.0), (0.01, 1.0)))
-    
-    elif fixed_d is None: # and fixed_f is specified
-
-        # Arguments (i.e. elements of the input array x) are:
-        #   [0]: grating period
-        def sensitivity_to_optimize(x):
-
-            # calculate diffraction efficiencies
-            e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, x[0], l, v, C3)[0])[0]
-            e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, x[0], l, v, C3)[0])[0]
-            e1_g2 = e1_g1
-
-            # calculate signal
-            signal = 4.0*I_inc*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
-
-            return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
-
-        guesses = np.array([100.0e-9])
-        return minimize(sensitivity_to_optimize, guesses, method='L-BFGS-B', bounds=np.array([(10.0e-9, None)]))
-
-    else: # both fixed_f and fixed_d are specified
-
-        # calculate diffraction efficiencies
-        e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, fixed_d, l, v, C3)[0])[0]
-        e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, fixed_d, l, v, C3)[0])[0]
-        e1_g2 = e1_g1
-
-        # calculate signal
-        signal = 4.0*I_inc*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
-
-        return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
-
-
-
 
 # Calculate sensitivity assuming vdW interactions given:
 #   beam intensity incident on the first grating (I_inc)
@@ -125,6 +30,8 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
 #   [1]: grating period
 #   [2]: g1 open fraction
 #   [3]: g2 open fraction
+# NOTE: The optimization of sensitivity with respect to grating period is unreliable.
+#   I recommend making a 3D plot of sensitivity vs d and v, which actually doesn't take much less time
 def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
     """ Calculate sensitivity assuming vdW interactions """
 
@@ -140,12 +47,14 @@ def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
         # minimize the sensitivity
         def sensitivity_to_optimize(x):
 
+            #print x[0]
+
             signal = calc_signal_vdw(I_inc, x[0], l, v, C3)[0]
 
             return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
 
         guesses = np.array([100.0e-9])
-        S_result = minimize(sensitivity_to_optimize, guesses, method='SLSQP', bounds=np.array([(10.0e-9, None)]))
+        S_result = minimize(sensitivity_to_optimize, guesses, method='SLSQP', bounds=np.array([(10.0e-9, None)]), options={'eps':1.0e-8})
 
         # recalculate optimal open fractions at the chosen grating period
         sig_result = calc_signal_vdw(I_inc, S_result.x[0], l, v, C3)
@@ -154,9 +63,9 @@ def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
 
     elif fixed_f is None: # and fixed_d is specified
 
-        signal = calc_signal_vdw(I_inc, fixed_d, l, v, C3)[0]
-        
-        S_result = v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal)) 
+        signal = calc_signal_vdw(I_inc, fixed_d, l, v, C3)
+
+        S_result = v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal[0])) 
         return np.array([S_result, fixed_d, signal[1], signal[2]])
 
     elif fixed_d is None: # and fixed_f is specified
@@ -214,8 +123,6 @@ def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
 #   [1]: optimal grating 2 open fraction
 def calc_signal_vdw(I_inc, d, l, v, C3, use_gauss_fit = True):
     """ Calculate signal assuming vdW interactions """
-
-    print I_inc, d, l, v, C3, use_gauss_fit
 
     # Optimize the signal, given by eqn 14 in the Cronin2005 paper
     # The first two bracketted terms in that equation can be maximized independently, 
