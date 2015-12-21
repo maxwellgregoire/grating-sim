@@ -3,6 +3,7 @@ import numpy as np
 from scipy import integrate
 from scipy.optimize import minimize
 from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 
 
 # In this code, the quantity |C|^2 * <I> is referred to as "signal"
@@ -119,6 +120,11 @@ def calc_sensitivity_vdw_optimized(I_inc, l, L, v, C3, fixed_d = None, fixed_f =
 # This function (optionally) numerically optimizes:
 #   grating open fractions (unless fixed_f is specified, in which case all gratings have that open fraction)
 #   grating period (unless fixed_d is specified)
+# This function returns an array containing the following (optimized) values:
+#   [0]: sensitivity
+#   [1]: grating period
+#   [2]: g1 open fraction
+#   [3]: g2 open fraction
 def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
     """ Calculate sensitivity assuming vdW interactions """
 
@@ -131,15 +137,46 @@ def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
 
     if fixed_d is None and fixed_f is None:
 
-        pass
+        # minimize the sensitivity
+        def sensitivity_to_optimize(x):
+
+            signal = calc_signal_vdw(I_inc, x[0], l, v, C3)[0]
+
+            return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
+
+        guesses = np.array([100.0e-9])
+        S_result = minimize(sensitivity_to_optimize, guesses, method='SLSQP', bounds=np.array([(10.0e-9, None)]))
+
+        # recalculate optimal open fractions at the chosen grating period
+        sig_result = calc_signal_vdw(I_inc, S_result.x[0], l, v, C3)
+
+        return np.array([S_result.fun, S_result.x[0], sig_result[1], sig_result[2]])
 
     elif fixed_f is None: # and fixed_d is specified
 
-        pass
+        signal = calc_signal_vdw(I_inc, fixed_d, l, v, C3)[0]
+        
+        S_result = v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal)) 
+        return np.array([S_result, fixed_d, signal[1], signal[2]])
 
     elif fixed_d is None: # and fixed_f is specified
 
-        pass
+        # argument is velocity
+        def sensitivity_to_optimize(x):
+
+            # calculate diffraction efficiencies
+            e0_g1 = cmath.polar(calc_diffraction_eff_vdw(0, fixed_f, x[0], l, v, C3)[0])[0]
+            e1_g1 = cmath.polar(calc_diffraction_eff_vdw(1, fixed_f, x[0], l, v, C3)[0])[0]
+            e1_g2 = e1_g1
+
+            # calculate signal
+            signal = 4.0*I_inc*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
+
+            return v*x[0] / (4.0*np.pi*L**2*np.sqrt(signal))
+
+        guesses = np.array([100.0e-9])
+        S_result = minimize(sensitivity_to_optimize, guesses, method='SLSQP', bounds=np.array([(10.0e-9, None)]))
+        return np.array([S_result.fun, S_result.x[0], fixed_f, fixed_f])
 
     else: # both fixed_f and fixed_d are specified
 
@@ -151,10 +188,8 @@ def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
         # calculate signal
         signal = 4.0*I_inc*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
 
-        return v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
-
-
-
+        S_result = v*fixed_d / (4.0*np.pi*L**2*np.sqrt(signal))
+        return np.array([S_result, fixed_d, fixed_f, fixed_f])
 
 
 
@@ -173,8 +208,14 @@ def calc_sensitivity_vdw(I_inc, l, L, v, C3, fixed_d = None, fixed_f = None):
 #       b) not much better than scipy.optimize.minimize, judging by the different answers you get using 
 #           different fit algorithms
 #   By setting use_gauss_fit to False, you can force it to use scipy.optimize.minimize
+# This function returns an array containing the following
+#   [0]: signal
+#   [1]: optimal grating 1 open fraction
+#   [1]: optimal grating 2 open fraction
 def calc_signal_vdw(I_inc, d, l, v, C3, use_gauss_fit = True):
     """ Calculate signal assuming vdW interactions """
+
+    print I_inc, d, l, v, C3, use_gauss_fit
 
     # Optimize the signal, given by eqn 14 in the Cronin2005 paper
     # The first two bracketted terms in that equation can be maximized independently, 
@@ -228,7 +269,7 @@ def calc_signal_vdw(I_inc, d, l, v, C3, use_gauss_fit = True):
         b1_res = -b1_to_optimize(f1_res)
         b2_res = -b2_to_optimize(f2_res)
         
-        return np.array([4.0*I_inc*0.23 * b1_res * b2_res, popt1[1], popt2[1]])
+        return np.array([4.0*I_inc*0.23 * b1_res * b2_res, f1_res, f2_res])
 
     else:
 

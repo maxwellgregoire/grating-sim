@@ -13,7 +13,7 @@ import nominal_param_values as npv
 f1 = np.linspace(0.3,0.95,11)
 f2 = np.linspace(0.3,0.95,11)
 F1, F2 = np.meshgrid(f1,f2)
-S = np.zeros([f2.size,f2.size], dtype = np.float)
+S = np.zeros([f1.size,f2.size], dtype = np.float)
 
 for i in range(f1.size):
     for j in range(f2.size):
