@@ -51,6 +51,8 @@
 \maketitle
 
 
+\subsection{Theory}
+
 The goal of this project is to allow us to explore how the sensitivity of a Mach-Zehnder atom interferometer gyroscope is determined by:
 \begin{itemize}
 	\item choice of atom (and its associated van der Waals $C_3$ coefficient)
@@ -62,12 +64,16 @@ The goal of this project is to allow us to explore how the sensitivity of a Mach
 \end{itemize}
 Choosing the grating thickness $l$ and grating-to-grating distance $L$ is likely fairly simple: we always want smaller $l$ and larger $L$, but $l$ will probably be determined by the grating fabrication process and $L$ is limited by the maximum size of the apparatus. The grating period $d_g$ and open fraction $w/d_g$ can be optimized for a choice of atom and atom velocity $v$. Therefore, we want to be able to plot the sensitivity of a Mach-Zehnder atom interferometer gyroscope as a function of $v$ for different atoms.
 
-The short-term sensitivity $S$ of a gyroscope is described as 
+The sensitivity $S$ of a gyroscope is described as 
 \begin{align}
 	S = \delta\Omega \sqrt{t}
 	\label{sensitivityGeneral}
 \end{align}
-where $\delta\Omega$ is the uncertainty in a typical measurement of rotation rate $\Omega$ and $t$ is the amount of data acquisition time required to make that measurement. Smaller values of $S$ are preferable.
+where $\delta\Omega$ is the uncertainty in a typical measurement of rotation rate $\Omega$ and $t$ is the amount of data acquisition time required to make that measurement. 
+Smaller values of $S$ are preferable.
+Values of $S$ are usually expressed in $rad/s/\sqrt{Hz}$. 
+$S$ also is a measure of the uncertainty in the gyroscope's angular orientation as a function of operating time and is therefore sometimes expressed in $^{\circ}/\sqrt{h}$ (i.e. the uncertainty in the gyroscope's angular orientation is $S\sqrt{T}$, where $T$ is the operating time since last calibration).
+
 This sensitivity $S$ can be written in terms of the items listed previously.
 For an atom interferometer gyroscope, the phase $\phi$ can be written as
 \begin{align}
@@ -107,11 +113,12 @@ Substituting into Eq. \ref{sensitivity2}, we get
 \end{align}
 
 
-\cite{Cronin2005} describes in detail how to calculate $|C|^2\avg{I}$ from the nanograting open fraction, thickness, and period. This calculation can be done with and without considering van der Waals interactions between the atoms and the grating bars. The case without van der Waals interaction represents a Mach-Zehnder atom interferometer made with Kapitza-Dirac gratings.
+\cite{Cronin2005} describes in detail how to calculate $|C|^2\avg{I}$ from the nanograting open fraction, thickness, and period as well as atom velocity and atom-grating $C_3$ coefficient. This calculation can be done with and without considering van der Waals interactions between the atoms and the grating bars. 
+Kapitza-Dirac gratings can be represented as gratings for which $C_3 = 0$ and the open fraction $f = 1/2$.
 
 Note that the $\left(e_n^{Gi}\right)^2$ terms in Eq. 14 in \cite{Cronin2005} should actually be written as $\left|e_n^{Gi}\right|^2$.
 
-van der Waals $C_3$ coefficients for alkali metals interacting with various media (including silicon nitride) are listed in atomic units in \cite{Arora2014}. To convert the $C_3$ coefficients in atomic units to SI units, multiply by 1 Hartree times the Bohr radius cubed. Useful $C_3$ coefficients are listed in Table \ref{tableC3}.
+van der Waals $C_3$ coefficients for alkali metals interacting with various media (including silicon nitride) are listed in atomic units in \cite{Arora2014}. To convert the $C_3$ coefficients in atomic units to SI units (for the sake of the numerical calculations), multiply by 1 Hartree times the Bohr radius cubed. Useful $C_3$ coefficients are listed in SI units in Table \ref{tableC3}.
 
 \begingroup
 \begin{table}
@@ -130,6 +137,19 @@ Rb & 8.85 & 6.20 \\
 \end{center}
 \end{table}
 \endgroup
+
+
+\subsection{Results}
+
+\begin{figure*}
+\includegraphics[width=\linewidth,keepaspectratio]{../plots/Sf1f2_vs_dv_Rb_L10cm.png}
+\caption{\label{S_vs_dv} TOP LEFT: Sensitivity $S$ of an atom interferometer gyroscope as a function of atom velocity $v$ and grating period $d$. For this calculation, it was assumed that $L = 10$ cm and the $C_3$ coefficient was that of Rb interacting with SiN$_x$. TOP RIGHT: Same as top left, but for Kapitza-Dirac gratings (open fractions set to 1/2, $C_3 = 0$). BOTTOM LEFT and BOTTOM RIGHT: optimal open fractions for gratings 1 and 2 as a function of $v$ and $d$. The optimal open fractions were capped at 0.8, since there is a physical limit to how small the grating bars can be. 0.8 was simply a guess at this limit--the actual limit likely depends on $d$.}
+\end{figure*}
+
+Fig \ref{S_vs_dv}, top left, shows the sensitivity of an atom interferometer gyroscope with material gratings as a function of $v$ and $d$. For this calculation, it was assumed that $L = 10$ cm and the $C_3$ coefficient was that of Rb interacting with SiN$_x$. This figure indicates that sensitivity $S$ always improves as grating period decreases and that the optimal velocity $v$ increases as $d$ decreases. 
+
+
+
 
 \bibliography{library}
 
