@@ -13,7 +13,7 @@ import nominal_param_values as npv
 f1 = np.linspace(0.3,0.95,11)
 f2 = np.linspace(0.3,0.95,11)
 F1, F2 = np.meshgrid(f1,f2)
-S = np.zeros([f1.size,f2.size], dtype = np.float)
+S = np.zeros([f2.size,f1.size], dtype = np.float)
 
 for i in range(f1.size):
     for j in range(f2.size):
@@ -27,7 +27,7 @@ for i in range(f1.size):
         signal = 4.0*npv.I_inc_nom*0.23*(e0_g1*e1_g1*e1_g2)**2 / (e0_g1**2 + e1_g1**2)
 
         # calculate sensitivity
-        S[i][j] = npv.v_nom*npv.d_nom / (4.0*np.pi*npv.L_nom**2*np.sqrt(signal))
+        S[j][i] = npv.v_nom*npv.d_nom / (4.0*np.pi*npv.L_nom**2*np.sqrt(signal))
 
 
 fig = plt.figure()

@@ -6,7 +6,7 @@
 %Control: page (1) range
 %Control: year (0) verbatim
 %Control: production of eprint (0) enabled
-\begin{thebibliography}{3}%
+\begin{thebibliography}{4}%
 \makeatletter
 \providecommand \@ifxundefined [1]{%
  \@ifx{#1\undefined}
@@ -85,4 +85,15 @@
   {http://link.aps.org/doi/10.1103/PhysRevA.89.022511} {\bibfield  {journal}
   {\bibinfo  {journal} {Phys. Rev. A}\ }\textbf {\bibinfo {volume} {89}},\
   \bibinfo {pages} {022511} (\bibinfo {year} {2014})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Durfee}\ \emph {et~al.}(2006)\citenamefont {Durfee},
+  \citenamefont {Shaham},\ and\ \citenamefont {Kasevich}}]{Durfee2006}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.~S.}\ \bibnamefont
+  {Durfee}}, \bibinfo {author} {\bibfnamefont {Y.~K.}\ \bibnamefont {Shaham}},
+  \ and\ \bibinfo {author} {\bibfnamefont {M.~A.}\ \bibnamefont {Kasevich}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {{Long-Term Stability of an
+  Area-Reversible Atom-Interferometer Sagnac Gyroscope}},}\ }\href
+  {http://link.aps.org/doi/10.1103/PhysRevLett.97.240801} {\bibfield  {journal}
+  {\bibinfo  {journal} {Phys. Rev. Lett.}\ }\textbf {\bibinfo {volume} {97}},\
+  \bibinfo {pages} {240801} (\bibinfo {year} {2006})}\BibitemShut {NoStop}%
 \end{thebibliography}%

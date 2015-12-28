@@ -11,9 +11,10 @@ import matplotlib.pyplot as plt
 # Constants
 hbar = 1.054e-34
 
-# Maximum open fraction that is practically achievable 
-f_max = 0.8
-
+# Maximum open fraction that is practically achievable, as a function of grating period
+grating_bar_min_width = 40.0e-9 # m
+def f_max(d):
+    return 1.0 - grating_bar_min_width/d
 
 
 # Calculate sensitivity assuming vdW interactions given:
@@ -169,8 +170,8 @@ def calc_signal_vdw(I_inc, d, l, v, C3, use_gauss_fit = True):
         popt2, pcov2 = curve_fit(gauss, f, sig2)
 
         # impose maximum open fraction
-        f1_res = min(popt1[1], f_max)
-        f2_res = min(popt2[1], f_max)
+        f1_res = min(popt1[1], f_max(d))
+        f2_res = min(popt2[1], f_max(d))
 
         # calculate final result
         b1_res = -b1_to_optimize(f1_res)
@@ -180,8 +181,8 @@ def calc_signal_vdw(I_inc, d, l, v, C3, use_gauss_fit = True):
 
     else:
 
-        res_b1 = minimize(b1_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,f_max)]), options={'eps':0.01})
-        res_b2 = minimize(b2_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,f_max)]), options={'eps':0.01})
+        res_b1 = minimize(b1_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,f_max(d))]), options={'eps':0.01})
+        res_b2 = minimize(b2_to_optimize, 0.5, method='SLSQP', bounds=np.array([(0.1,f_max(d))]), options={'eps':0.01})
     
         # returns
         #   [0]: signal
